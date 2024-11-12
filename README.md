@@ -12,3 +12,6 @@ ctrl+shift_i,打开开发者工具。
 在wait_until函数中，处于对网络的不信任做了一个微小的延时（0.3s），可以自行调整
 
 ![屏幕截图 2024-11-10 145209](https://github.com/user-attachments/assets/384efc51-4341-498c-8899-288817faedb9)
+
+结构图如下
+![抢讲座脚本-241110232016](https://github.com/user-attachments/assets/151814ff-9829-4919-95f3-91c93ae8bb07)
