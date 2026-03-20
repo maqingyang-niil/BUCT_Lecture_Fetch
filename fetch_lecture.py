@@ -2,12 +2,10 @@ from concurrent.futures.thread import ThreadPoolExecutor
 from email.mime.multipart import MIMEMultipart
 from datetime import datetime,timedelta
 from email.mime.text import MIMEText
-from requests.packages import target
 from bs4 import BeautifulSoup
 from time import sleep
 import requests
 import smtplib
-import queue
 import time
 import re
 #**********************邮件发送***********************
@@ -16,20 +14,25 @@ msg['From'] = ''        #发送邮件的地址
 msg['To'] = ''        #接收邮件的地址
 # SMTP服务器配置
 smtp_server = ''        #发送邮件邮箱的smtp服务器地址
-port =               #对应服务器的端口号
+port =''               #对应服务器的端口号
 username = ''        #发送邮件的地址
 password = ''        #smtp服务的邮箱密码
 #*************************提取元素********************
 pattern = r'id=(\d+)&pprid=(\d+)'        #正则表达式提取提取
-def wait_until(target_time):        #抢讲座的时间
-    #让程序休眠到指定时间10秒之前
-    time_difference=target_time-datetime.now();
-    time_diff_sec=time_difference.total_seconds();
-    sleep(time_diff_sec-10)
-    #指定时间后300毫秒内退出循环
-    target_time+=timedelta(milliseconds=300)
-    while datetime.now()<target_time:
-        sleep(0.1)
+def wait_until(target_time): #抢讲座的时间
+    target_time-=timedelta(milliseconds=50);
+    target=time.perf_counter()+(target_time.timestamp()-time.time())
+    while True:
+        now=time.perf_counter()
+        diff=target=now
+        if diff>1:
+            time.sleep(diff-0.5)
+        elif diff>0.01:
+            time.sleep(diff-0.005)
+        elif diff>0:
+            while time.perf_counter()<target:
+                pass
+            break
 
 def send_email(lecture_info_list):        #把讲座信息发送到指定邮箱
     subject="讲座信息"
@@ -109,9 +112,9 @@ def get_lecture_info(soup):        #获取讲座信息
     return lecture_info_list
 
 if __name__ == '__main__':
-    params_list=list();
-    get_params_list(params_list);
-    threads_number=len(params_list);
+    params_list=list()
+    get_params_list(params_list)
+    threads_number=len(params_list)
     target_time=datetime(2024,11,9,23,26,0)        #输入设定的抢讲座的时间
     wait_until(target_time)
     with ThreadPoolExecutor(max_workers=threads_number) as executor:
